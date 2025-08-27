@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UK Salary Calculator – Estimate Take‑Home Pay</title>
+    <meta name="description" content="Estimate your UK take‑home pay after income tax and National Insurance using our salary calculator.">
+    <meta name="keywords" content="UK salary calculator,take home pay,UK tax calculator,income tax,National Insurance">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 2rem; max-width: 800px; margin-left: auto; margin-right: auto; }
+        h1 { color: #333333; }
+        form { margin-top: 1rem; }
+        label { display: block; margin: 0.5rem 0 0.2rem; font-weight: bold; }
+        input, select { width: 100%; padding: 0.5rem; margin-bottom: 1rem; box-sizing: border-box; }
+        button { padding: 0.5rem 1rem; background-color: #0066cc; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #004d99; }
+        .result { margin-top: 1rem; background: #f5f5f5; padding: 1rem; border: 1px solid #dddddd; }
+        footer { margin-top: 2rem; font-size: 0.9rem; color: #666666; }
+    </style>
+</head>
+<body>
+
+    <h1>UK Salary & Tax Calculator</h1>
+    <p>Enter your annual gross salary to estimate your take‑home pay after income tax and National Insurance. Our calculator uses current UK tax bands and allowances to give you an idea of what you will take home each month.</p>
+    <form id="salary-form" onsubmit="event.preventDefault(); calculateSalary();">
+        <label for="grossSalary">Annual Gross Salary (£)</label>
+        <input type="number" id="grossSalary" min="0" step="100" placeholder="e.g. 35000" required>
+        <button type="submit">Calculate</button>
+    </form>
+    <div id="salaryResult" class="result" style="display:none;"></div>
+    <h2>How UK income tax works</h2>
+    <p>The UK tax system uses a personal allowance and progressive tax bands to determine how much tax you pay. For the 2024/25 tax year:</p>
+    <ul>
+        <li><strong>Personal allowance:</strong> The first £12,570 you earn is tax‑free.</li>
+        <li><strong>Basic rate (20%):</strong> Applies to income between £12,571 and £50,270.</li>
+        <li><strong>Higher rate (40%):</strong> Applies to income between £50,271 and £150,000.</li>
+        <li><strong>Additional rate (45%):</strong> Applies to income over £150,000.</li>
+    </ul>
+    <p>Your National Insurance contributions are also deducted from your salary. Our calculator adds all of these elements together to provide a rough estimate of your take‑home pay. Always consult official HMRC resources or a tax professional for personalised advice.</p>
+<script>
+
+    function calculateSalary() {
+        const gross = parseFloat(document.getElementById('grossSalary').value);
+        if (isNaN(gross) || gross < 0) return;
+        // 2024/25 personal allowance and tax bands (approximate)
+        let allowance = 12570;
+        let basicRate = 0.20;
+        let higherRate = 0.40;
+        let additionalRate = 0.45;
+        let niRate = 0.12;
+        let tax = 0;
+        let taxable = Math.max(0, gross - allowance);
+        if (taxable <= 37700) {
+            tax = taxable * basicRate;
+        } else if (taxable <= 150000) {
+            tax = 37700 * basicRate + (taxable - 37700) * higherRate;
+        } else {
+            tax = 37700 * basicRate + (150000 - 37700) * higherRate + (taxable - 150000) * additionalRate;
+        }
+        // NI contributions (approximate threshold)
+        let niLower = 12570;
+        let niTaxable = Math.max(0, gross - niLower);
+        let ni = niTaxable * niRate;
+        let takeHome = gross - tax - ni;
+        let result = document.getElementById('salaryResult');
+        result.style.display = 'block';
+        result.innerHTML = `<strong>Estimated Annual Take‑Home Pay:</strong> £${takeHome.toFixed(2)}<br>` +
+            `Total Income Tax: £${tax.toFixed(2)}<br>` +
+            `National Insurance: £${ni.toFixed(2)}`;
+    }
+
+</script>
+    <footer>
+        <p>Disclaimer: This tool is for informational purposes only. Please verify any calculations with official sources before making financial or health decisions.</p>
+    </footer>
+</body>
+</html>
